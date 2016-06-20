@@ -148,6 +148,7 @@
     <Compile Include="Common\Models\LicenseData.cs" />
     <Compile Include="Common\NlogMemPsTarget.cs" />
     <Compile Include="Common\NlogMemTarget.cs" />
+    <Compile Include="Common\ValidationRules\EmailRule.cs" />
     <Compile Include="Common\ValidationRules\RequiredValidationRule.cs" />
     <Compile Include="Common\SystemInfo.cs" />
     <Compile Include="Common\ValidationRules\AlphaNumericSymbolsRule.cs" />

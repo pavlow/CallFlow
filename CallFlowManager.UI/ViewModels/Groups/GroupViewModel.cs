@@ -85,6 +85,7 @@ namespace CallFlowManager.UI.ViewModels.Groups
                 {
                     _isDistributionGroup = value;
                     OnPropertyChanged("IsDistributionGroup");
+                    OnPropertyChanged("DistributionGroup");
 
                     if (!value)
                     {

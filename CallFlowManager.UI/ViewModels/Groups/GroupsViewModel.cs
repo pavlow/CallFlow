@@ -13,14 +13,14 @@ using Logging;
 
 namespace CallFlowManager.UI.ViewModels.Groups
 {
-    public class GroupsViewModel : PropertyChangedBase
+    public class GroupsViewModel : PropertyChangedBase, IDataErrorInfo
     {
         private static readonly NLogger Logger = LoggerFactory.Instance.GetCurrentClassLogger() as NLogger;
 
         //Class wide variables
         //Regex e.g. User Three (sip:u3@ucgeek.nz)
         private static readonly Regex RegexAgent = new Regex(@"^(?<name>.*)\((?<sip>.*)\).*$");
-        private string _name;
+        //        private string _name;
         private string _selectedUser;
         private int _selectedIndex;
         private GroupViewModel _selectedGroup;
@@ -41,12 +41,14 @@ namespace CallFlowManager.UI.ViewModels.Groups
             _backgroundWorker = new BackgroundWorker();
             _loadedGroups = new List<GroupViewModel>();
             CurrentGroup = new GroupViewModel();
+            
             SelectedGroup = new GroupViewModel();
 
             _psQ = new PsQueries();
             _sharedPsService = new SharedPsService();
 
             RoutingMethods = Globals.GrpRoutingMethods;
+            CurrentGroup.RoutingMethod = RoutingMethods["Parallel"].ToString();
             LoadCommand = new RelayCommand(_ => LoadGroups());
             UpdateCommand = new RelayCommand(_ => Update());
             ClearCommand = new RelayCommand(_ => Clear());
@@ -56,6 +58,8 @@ namespace CallFlowManager.UI.ViewModels.Groups
             GAgentCallGroupsUpCommand = new RelayCommand(_ => GAgentCallGroupsUp());
             GAgentCallGroupsDnCommand = new RelayCommand(_ => GAgentCallGroupsDn());
             Groups = new ObservableCollection<GroupViewModel>();
+            //            OnPropertyChanged("DisplayName");
+
             //UserAgents = _dataService.UsersList as Dictionary<string, string>;
         }
 
@@ -71,6 +75,45 @@ namespace CallFlowManager.UI.ViewModels.Groups
         public ObservableCollection<GroupViewModel> Groups { get; private set; }
         public Dictionary<string, string> UserAgents { get; private set; }
         public IEnumerable<string> Pools { get; private set; }
+
+        public string DisplayName
+        {
+            get { return CurrentGroup.Name; }
+            set
+            {
+                if (CurrentGroup.Name != value)
+                {
+                    CurrentGroup.Name = value;
+                    OnPropertyChanged("DisplayName");
+                }
+            }
+        }
+
+        public int CurrentGroupTimeout
+        {
+            get { return CurrentGroup.Timeout; }
+            set
+            {
+                if (CurrentGroup.Timeout != value)
+                {
+                    CurrentGroup.Timeout = value;
+                    OnPropertyChanged("CurrentGroupTimeout");
+                }
+            }
+        }
+
+        //public string CurrentGroupDistributionGroup
+        //{
+        //    get { return CurrentGroup.DistributionGroup; }
+        //    set
+        //    {
+        //        if (CurrentGroup.DistributionGroup != value)
+        //        {
+        //            CurrentGroup.DistributionGroup = value;
+        //            OnPropertyChanged("CurrentGroupDistributionGroup");
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Value to display on the status bar
@@ -178,6 +221,7 @@ namespace CallFlowManager.UI.ViewModels.Groups
             StatusBar = "";
             IsLoading = false;
             CurrentGroup = _currentGroup;
+            OnPropertyChanged("DisplayName");
         }
 
         /// <summary>
@@ -218,6 +262,7 @@ namespace CallFlowManager.UI.ViewModels.Groups
                     }
                 }
             }
+            OnPropertyChanged("DisplayName");
         }
 
         public void Clear()
@@ -231,38 +276,6 @@ namespace CallFlowManager.UI.ViewModels.Groups
         {
 
         }
-
-        //private void CreateGroup()
-        //{
-        //    List<string> AgentsByUri = new List<string>();
-        //    string AgentsCSV = "";
-        //    foreach (var Agent in CurrentGroup.Agents.OrderBy(a => a.Name))
-        //    {
-        //        AgentsCSV += Agent.SipAddress.Trim() + ",";
-        //    }
-        //    AgentsCSV = AgentsCSV.TrimEnd(',');
-
-        //    string NewRoutingGroup = "";
-        //    if (!string.IsNullOrEmpty(CurrentGroup.RoutingMethod))
-        //    {
-        //        var tidyUp = CurrentGroup.RoutingMethod;
-        //        tidyUp = tidyUp.TrimStart('[');
-        //        tidyUp = tidyUp.TrimEnd(']');
-        //        NewRoutingGroup = tidyUp.Split(',')[0].Trim();
-        //    }
-
-        //    //TODO: validation before going to powershell
-
-        //    var LyncService = new Lync_WCF.LyncServerManager();
-
-        //    LyncService.SetCsRgsAgentGroup(CurrentGroup.Identity, CurrentGroup.Name, CurrentGroup.Description ?? "", CurrentGroup.ParticipationPolicy,
-        //        CurrentGroup.Timeout.ToString(), NewRoutingGroup, CurrentGroup.DistributionGroup, CurrentGroup.Owner, AgentsCSV);
-
-        //    //TODO: need to get result back from PsFactory and display in UI
-        //    //Prob need to change from VOID
-
-        //}
-
         
         public GroupViewModel SelectedGroup
         {
@@ -272,10 +285,11 @@ namespace CallFlowManager.UI.ViewModels.Groups
                 if (_selectedGroup != value)//&& value != null
                 {
                     _selectedGroup = value;
+                    SelectedAgent = null;
 
                     if (_selectedGroup != null)
                     {
-                        CurrentGroup = (GroupViewModel) value.Clone();
+                        CurrentGroup = (GroupViewModel)value.Clone();
                     }
                     OnPropertyChanged("SelectedGroup");
                 }
@@ -291,6 +305,7 @@ namespace CallFlowManager.UI.ViewModels.Groups
                 {
                     _currentGroup = value;
                     OnPropertyChanged("CurrentGroup");
+                    OnPropertyChanged("DisplayName");
                 }
             }
         }
@@ -326,7 +341,7 @@ namespace CallFlowManager.UI.ViewModels.Groups
             get { return _selectedAgent; }
             set
             {
-                if (_selectedAgent != value && value != null)
+                if (_selectedAgent != value )
                 {
                     _selectedAgent = value;
                     OnPropertyChanged("SelectedAgent");
@@ -386,22 +401,106 @@ namespace CallFlowManager.UI.ViewModels.Groups
                 CurrentGroup.Agents.Insert(indexItem + 1, temp);
                 SelectedAgent = CurrentGroup.Agents.ElementAt(indexItem + 1);
                 SelectedIndex = indexItem + 1;
-            }            
-        }
-        
-
-        public string Name
-        {
-            get { return _name; }
-            set
-            {
-                if (_name != value)
-                {
-                    _name = value;
-                    OnPropertyChanged("Name");
-                }
             }
         }
-        
+        private void ForcePropertyChange()
+        {
+            OnPropertyChanged("DisplayName");
+            OnPropertyChanged("CurrentGroupTimeout");
+        }
+
+        #region Validate
+
+        public string Error
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public string this[string columnName]
+        {
+            get
+            {
+                string error = string.Empty;
+                switch (columnName)
+                {
+                    case "DisplayName":
+                        if (String.IsNullOrEmpty(DisplayName))
+                            error = "Display Name is required";
+                        break;
+                    case "CurrentGroupTimeout":
+                        if (CurrentGroupTimeout < 10 || CurrentGroupTimeout > 600)
+                            error = "Must be in interval: 10-600";
+                        break;
+                    //case "CurrentGroupTimeout":
+                    //    if (CurrentGroupTimeout < 10 || CurrentGroupTimeout > 600)
+                    //        error = "Must be in interval: 10-600";
+                    //break;
+                    //case "StartHour":
+                    //case "StartMinute":
+                    //case "EndHour":
+                    //case "EndMinute":
+                    //    //if (NewHolidayTime.StartHolidayDate.DateTime > NewHolidayTime.EndHolidayDate.DateTime)
+                    //    //    error = "Start date&time can't be later than End";
+                    //    break;
+                }
+
+                //string error = (NewHolidayTime as IDataErrorInfo)[propertyName];
+                //validProperties[propertyName] = String.IsNullOrEmpty(error) ? true : false;
+                //ValidateProperties();
+                //CommandManager.InvalidateRequerySuggested();
+                //        ForcePropertyChange();
+                return error;
+            }
+        }
+
+        #endregion Validate
+
+        // TO CLEAR
+
+        //public string Name
+        //{
+        //    get { return _name; }
+        //    set
+        //    {
+        //        if (_name != value)
+        //        {
+        //            _name = value;
+        //            OnPropertyChanged("Name");
+        //        }
+        //    }
+        //}
+
+        //private void CreateGroup()
+        //{
+        //    List<string> AgentsByUri = new List<string>();
+        //    string AgentsCSV = "";
+        //    foreach (var Agent in CurrentGroup.Agents.OrderBy(a => a.Name))
+        //    {
+        //        AgentsCSV += Agent.SipAddress.Trim() + ",";
+        //    }
+        //    AgentsCSV = AgentsCSV.TrimEnd(',');
+
+        //    string NewRoutingGroup = "";
+        //    if (!string.IsNullOrEmpty(CurrentGroup.RoutingMethod))
+        //    {
+        //        var tidyUp = CurrentGroup.RoutingMethod;
+        //        tidyUp = tidyUp.TrimStart('[');
+        //        tidyUp = tidyUp.TrimEnd(']');
+        //        NewRoutingGroup = tidyUp.Split(',')[0].Trim();
+        //    }
+
+        //    //TODO: validation before going to powershell
+
+        //    var LyncService = new Lync_WCF.LyncServerManager();
+
+        //    LyncService.SetCsRgsAgentGroup(CurrentGroup.Identity, CurrentGroup.Name, CurrentGroup.Description ?? "", CurrentGroup.ParticipationPolicy,
+        //        CurrentGroup.Timeout.ToString(), NewRoutingGroup, CurrentGroup.DistributionGroup, CurrentGroup.Owner, AgentsCSV);
+
+        //    //TODO: need to get result back from PsFactory and display in UI
+        //    //Prob need to change from VOID
+
+        //}
+
+
     }
 }

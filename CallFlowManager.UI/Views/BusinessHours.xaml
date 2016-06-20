@@ -12,7 +12,6 @@
 
     <UserControl.Resources>
         <converters:NullToBooleanFalse x:Key="NullToBooleanFalse" />
-        <converters:NullToBooleanFalse x:Key="NullToBooleanTrue" />
     </UserControl.Resources>
     
 
@@ -134,9 +133,7 @@
                     </Button.Style>
                 </Button>
 
-                <Button Command="{Binding RemoveGroupCommand}" Focusable="False" IsEnabled="{Binding SelectedHourGroup, Converter={StaticResource NullToBooleanFalse}}" Content = "Remove"></Button>
-
-
+                <Button Command="{Binding RemoveGroupCommand}" Focusable="False" IsEnabled="{Binding SelectedHourGroup, Converter={StaticResource NullToBooleanFalse}}" Content = "Remove"/>
                 <Button IsEnabled="False" Command="{Binding BulkAddGroupCommand}" Focusable="False">Bulk Add</Button>
             </WrapPanel>
 

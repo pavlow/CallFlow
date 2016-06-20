@@ -6,14 +6,12 @@
              xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:converters="clr-namespace:CallFlowManager.UI.Converters"
              xmlns:myCtrls="clr-namespace:CallFlowManager.UI.Views"
-             xmlns:rules="clr-namespace:CallFlowManager.UI.Common.ValidationRules"
+             xmlns:validationRules="clr-namespace:CallFlowManager.UI.Common.ValidationRules"
              mc:Ignorable="d"
              d:DesignHeight="900" d:DesignWidth="900">
 
     <UserControl.Resources>
-        <converters:NoDataConverter x:Key="NoDataConverter" />
-        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
-        <converters:NullVisibilityConverter x:Key="NullToVisibilityConverter"/>
+            <converters:NullToBooleanFalse x:Key="NullToBooleanFalse" />
     </UserControl.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -38,14 +36,46 @@
                   Grid.Column="0" 
                   Width="Auto" 
                   Height="26" 
-                  Margin="10,0,10,0"
+                  Margin="10,18, 10,0"
                   ItemsSource="{Binding Groups}" 
                   SelectedItem="{Binding SelectedGroup}" 
-                  DisplayMemberPath="Name"/>
+                  DisplayMemberPath="Name"
+                          VerticalAlignment="Top"/>
 
-                <WrapPanel Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,-1,0">
+                <WrapPanel Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal">
                     <Button Focusable="False" IsEnabled="{Binding IsEnabled}" Command="{Binding LoadCommand}" Width="53">Refresh</Button>
-                    <Button Focusable="False" IsEnabled="{Binding IsEnabled}" Command="{Binding UpdateCommand}" Width="53">Save</Button>
+
+                   
+                    <Button Command="{Binding UpdateCommand}" Focusable="False" Content="Save">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MetroButton}" >
+                                <Setter Property="Height" Value="30"/>
+                                <Setter Property="Width" Value="100"/>
+                                <Setter Property="Margin" Value="0,4,4,0"/>
+                                <Setter Property="IsEnabled" Value="False" />
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding (Validation.HasError), ElementName=DistributionGroup}" Value="False" />
+                                            <Condition Binding="{Binding (Validation.HasError), ElementName=DisplayName}" Value="False" />
+                                            <Condition Binding="{Binding (Validation.HasError), ElementName=CurrentGroupTimeout}" Value="False" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="IsEnabled" Value="True" />
+                                    </MultiDataTrigger>
+                                    <DataTrigger Binding="{Binding IsEnabled}" Value="false">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding DisplayName}" Value="{x:Null}">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedGroup}" Value="{x:Null}">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
                     <Button Focusable="False" IsEnabled="False" Command="{Binding DeleteCommand}" Width="53">Delete</Button>
                     <Button Focusable="False" IsEnabled="{Binding IsEnabled}" Command="{Binding ClearCommand}" Width="40">Clear</Button>
                     <controls:ProgressRing IsActive="{Binding IsLoading}" Visibility="Visible" Foreground="{DynamicResource AccentColorBrush}"/>
@@ -56,15 +86,7 @@
 
                 <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Vertical" Margin="10,10,10,0">
                     <Label Content="Display Name"/>
-                    <TextBox>
-                        <TextBox.Text>
-                            <Binding Path="CurrentGroup.Name" UpdateSourceTrigger="PropertyChanged"  ValidatesOnDataErrors="True">
-                                <Binding.ValidationRules>
-                                    <rules:RequiredValidationRule IsRequired="True" ValidationStep="RawProposedValue" />
-                                </Binding.ValidationRules>
-                            </Binding>
-                        </TextBox.Text>
-                    </TextBox>
+                    <TextBox Name="DisplayName" controls:TextBoxHelper.Watermark="Required" Text="{Binding Path=DisplayName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
 
                     <Label Content="Description"/>
                     <TextBox TextWrapping ="Wrap" Text="{Binding Path=CurrentGroup.Description, UpdateSourceTrigger=PropertyChanged}" Height="100" />
@@ -75,51 +97,20 @@
                         HorizontalAlignment="Left"
                         Margin="5,0"/>
                         <Label IsEnabled="{Binding CurrentGroup.IsDistributionGroup}" Name="TestText1" Content="Route calls based on distribution group" VerticalAlignment="Center"/>
-
-                        <!--<controls:ToggleSwitch Name="Toggle1">
-                        <controls:ToggleSwitch.Style>
-                            -->
-                        <!-- TRIGGER EXAMPLE: http://stackoverflow.com/questions/2520483/how-do-i-bind-to-another-controls-property-from-a-trigger -->
-                        <!--
-                            <Style TargetType="controls:ToggleSwitch">
-                                <Setter Property="FontSize" Value="22"/>
-                                <Setter Property="FontFamily" Value="Segoe UI"/>
-                                <Setter Property="Height" Value="30"/>
-                                <Setter Property="Width" Value="Auto"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                <Setter Property="RenderTransform">
-                                    <Setter.Value >
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" CenterY="5" />
-                                    </Setter.Value>
-                                </Setter>
-                                
-                                -->
-                        <!-- Here is the 'normal' default content -->
-                        <!--
-                                <Setter Property="IsChecked" Value="{Binding Path=CurrentGroup.IsDistributionGroup}"/>
-                                <Style.Triggers>
-                                    -->
-                        <!-- Here is how we bind to another control's property -->
-                        <!--
-                                    <DataTrigger Binding="{Binding IsChecked, ElementName=Toggle2}" Value="True">
-                                        -->
-                        <!-- Here is the 'override' content -->
-                        <!--
-                                        <Setter Property="IsChecked" Value="False"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsChecked, ElementName=Toggle2}" Value="False">
-                                         -->
-                        <!--Here is the 'override' content-->
-                        <!-- 
-                                        <Setter Property="IsChecked" Value="True"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </controls:ToggleSwitch.Style>
-                    </controls:ToggleSwitch>-->
                     </WrapPanel>
 
-                    <TextBox IsEnabled="{Binding CurrentGroup.IsDistributionGroup}" Text="{Binding Path=CurrentGroup.DistributionGroup, UpdateSourceTrigger=PropertyChanged}"/>
+                    <!--<TextBox IsEnabled="{Binding CurrentGroup.IsDistributionGroup}" Text="{Binding Path=CurrentGroup.DistributionGroup, UpdateSourceTrigger=PropertyChanged }"/>-->
+
+                    <TextBox Name="DistributionGroup" IsEnabled="{Binding CurrentGroup.IsDistributionGroup}" controls:TextBoxHelper.Watermark="If ON - required Email format" >
+                        <TextBox.Text>
+                            <Binding Path="CurrentGroup.DistributionGroup" UpdateSourceTrigger="LostFocus"  ValidatesOnDataErrors="True">
+                                <Binding.ValidationRules>
+                                    <validationRules:EmailRule ValidationStep="RawProposedValue"/>
+                                    <validationRules:RequiredValidationRule IsRequired="True" ValidationStep="RawProposedValue" />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
 
                     <WrapPanel Orientation="Horizontal" Margin="0,10,0,0">
                         <controls:ToggleSwitch 
@@ -138,7 +129,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Slider x:Name="AllertSlider"
-                            Value="{Binding CurrentGroup.Timeout, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Value="{Binding CurrentGroupTimeout, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             Minimum="10"
                             Maximum="600"
                             LargeChange="5"
@@ -147,10 +138,9 @@
                             IsSnapToTickEnabled="True"
                             Width="225"
                             Margin="5, 12, 0, 0"/>
-                        <TextBox
-                           Text="{Binding CurrentGroup.Timeout,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                        <TextBox Name="CurrentGroupTimeout"
+                           Text="{Binding CurrentGroupTimeout, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                            Width="40"
-                           
                            Margin="10, 10, 0, 0"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
@@ -179,11 +169,12 @@
                   Margin="10,0" 
                   VerticalAlignment="Top"/>
 
-                <WrapPanel IsEnabled="{Binding CurrentGroup.IsGroupAgents}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment ="Top" Orientation="Horizontal" Height="30" Margin="0,0,-1,0">
-                    <Button Focusable="False" Margin="0" Width="100" Command="{Binding GAgentCallGroupsAddCommand}">Add</Button>
-                    <Button Focusable="False" Margin="10,0,0,0" Width="100" Command="{Binding GAgentCallGroupsRemoveCommand}">Remove</Button>
-                    <Button Focusable="False" Margin="10,0,0,0" Width="50" Command="{Binding GAgentCallGroupsUpCommand}">Up</Button>
-                    <Button Focusable="False" Margin="10,0,0,0" Width="50" Command="{Binding GAgentCallGroupsDnCommand}">Dn</Button>
+                <WrapPanel IsEnabled="{Binding CurrentGroup.IsGroupAgents}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment ="Top" Orientation="Horizontal" Height="30" Margin="0,0,0,0">
+
+                    <Button Focusable="False" Margin="0" Width="100" Command="{Binding GAgentCallGroupsAddCommand}" IsEnabled="{Binding SelectedUser, Converter={StaticResource NullToBooleanFalse}}" Content = "Add"/>
+                    <Button Focusable="False" Margin="10,0,0,0" Width="100" Command="{Binding GAgentCallGroupsRemoveCommand}" IsEnabled="{Binding SelectedAgent, Converter={StaticResource NullToBooleanFalse}}" Content = "Remove"/>
+                    <Button Focusable="False" Margin="10,0,0,0" Width="50" Command="{Binding GAgentCallGroupsUpCommand}" IsEnabled="{Binding SelectedAgent, Converter={StaticResource NullToBooleanFalse}}" Content = "Up" />
+                    <Button Focusable="False" Margin="10,0,0,0" Width="50" Command="{Binding GAgentCallGroupsDnCommand}" IsEnabled="{Binding SelectedAgent, Converter={StaticResource NullToBooleanFalse}}" Content = "Dn" />
                 </WrapPanel>
 
                 <DataGrid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" 

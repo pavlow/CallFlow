@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using CallFlowManager.UI.ViewModels.Groups;
 using System.Windows;
+using System.Windows.Data;
 using Logging;
 
 namespace CallFlowManager.UI.Views
@@ -24,6 +25,17 @@ namespace CallFlowManager.UI.Views
                 DataContext = context;
                 Window parentWindow = Application.Current.MainWindow;
                 parentWindow.Loaded += delegate { context.LoadCommand.Execute(null); };
+                //this.Loaded += delegate
+                //{
+                //    BindingExpression be = displayName.GetBindingExpression(TextBox.TextProperty);
+                //    be.UpdateSource();
+                //};
+                //this.Loaded += (s, e) =>
+                //{
+                ////    _target = new NlogMemPsTarget("PsLogPopup", NLog.LogLevel.Info, "*"); 
+                //    //_target = new NlogMemTarget("PsLogPopup", NLog.LogLevel.Warn, "*Ps*");
+                //    _target.Log += log => LogText(log);
+                //};
             }
             catch (Exception ex)
             {

@@ -860,92 +860,9 @@ namespace CallFlowManager.UI.ViewModels.Holidays
 
         public string Error
         {
-            // get { return (NewHolidayTime as IDataErrorInfo).Error; }
             get { throw new NotImplementedException(); }
         }
 
         #endregion Validate
-
-        #region TO CLEAR
-
-        //private void ValidateProperties()
-        //{
-        //    foreach (bool isValid in validProperties.Values)
-        //    {
-        //        if (!isValid)
-        //        {
-        //            this.AllPropertiesValid = false;
-        //            return;
-        //        }
-        //    }
-        //    this.AllPropertiesValid = true;
-        //}
-
-
-        //public bool AllPropertiesValid
-        //{
-        //    get { return allPropertiesValid; }
-        //    set
-        //    {
-        //        if (allPropertiesValid != value)
-        //        {
-        //            allPropertiesValid = value;
-        //            base.OnPropertyChanged("AllPropertiesValid");
-        //        }
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Gets or sets the start date.
-        ///// </summary>
-        //public DateTime StartDate
-        //{
-        //    get
-        //    {
-        //        return _startDate;
-        //    }
-
-        //    set
-        //    {
-        //        if (_startDate != value)
-        //        {
-        //            _startDate = value;
-        //            OnPropertyChanged("StartDate");
-        //        }
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Gets or sets the end date.
-        ///// </summary>
-        //public DateTime EndDate
-        //{
-        //    get
-        //    {
-        //        return _endDate;
-        //    }
-
-        //    set
-        //    {
-        //        if (_endDate != value)
-        //        {
-        //            _endDate = value;
-        //            OnPropertyChanged("EndDate");
-        //        }
-        //    }
-        //}
-
-        ///// <summary>
-        ///// The _start date.
-        ///// </summary>
-        //private DateTime _startDate;
-
-        ///// <summary>
-        ///// The _end date.
-        ///// </summary>
-        //private DateTime _endDate;
-
-        // private Dictionary<string, bool> validProperties;
-        #endregion TO CLEAR
     }
 }

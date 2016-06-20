@@ -8,8 +8,6 @@
              xmlns:converters="clr-namespace:CallFlowManager.UI.Converters"
              xmlns:myCtrls="clr-namespace:CallFlowManager.UI.Views"
              xmlns:validationRules="clr-namespace:CallFlowManager.UI.Common.ValidationRules"
-
-
              mc:Ignorable="d"
              Name="WindowDesigner"
              d:DesignHeight="900" d:DesignWidth="900">
@@ -17,7 +15,6 @@
     <UserControl.Resources>
         <converters:NoDataConverter x:Key="NoDataConverter" />
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
-        <converters:NullToBooleanFalse x:Key="NullToBooleanFalse" />
         <converters:NullToBooleanTrue x:Key="NullToBooleanTrue" />
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" True="Collapsed" False="Visible"/>
         <converters:NullVisibilityConverter x:Key="NullToVisibilityConverter"/>
