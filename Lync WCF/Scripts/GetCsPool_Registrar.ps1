@@ -1,0 +1,1 @@
+ Get-CsPool | Where-Object {$_.Services -like 'Registrar:*'}

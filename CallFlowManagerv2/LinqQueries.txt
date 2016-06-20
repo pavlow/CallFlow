@@ -1,0 +1,67 @@
+﻿
+                                    var test1 = (dynamic)CsQ.Groups.SelectMany(g => g.Members).Where(a => a.Name == "AgentsByUri");
+                                    var test11 = CsQ.Groups.SelectMany(g => g.Members).Where(a => a.Name == "AgentsByUri");//.SelectMany(b => b.Value).Where(c => c == "AgentsByUri");
+                                    var test33 = CsQ.Groups.SelectMany(g => g.Members).Where(a => a.Name == "AgentsByUri").Where(b => b.Name == "AbsoluteUri");//.Where(a => a.Name == "AbsoluteUri");
+                                    var best1 = CsQ.Groups.SelectMany(g => g.Members).Where(a => a.Name == "AgentsByUri").Select(b => b.Value).ToList();//.SelectMany(b => b.Name).Where(b => b.ToString() == "AbsoluteUri");
+                                    //var best5 = CsQ.Groups.SelectMany(g => g.Members).Where(a => a.Name == "Name").Select(b => b.Value).Where(c => c.Name);//.Select(b => b.Value).ToList();
+
+                                    var best6 = CsQ.Groups.SelectMany(g => g.Members.Select(a => new { A = a, G = g }).Where(ga => ga.A.Name == "Name"));
+                                    //var best7 = CsQ.Groups.SelectMany(g => g.Members.Where(g.Members.Select(f => f.Name.Where(a => a == "AgentsByUri"))//.Where(s => s) == "").Select(a => new { A = a, G = g }).Where(z => z.G.); //.Select(z => z.A.Value));//.Where(ga => ga.A.Name == "AgentsByUri"));
+
+                                    var uri = CsQ.Groups.SelectMany(g => g.Members).Where(a => a.Name == "AgentsByUri").Select(b => b.Value).Select(c => c).ToList();//WHERE AgentsByUri (which is a collection) contains a specific value/item
+                                    var we = CsQ.Groups.SelectMany(g => g.Members).Where(a => a.Name == "Name").Select(b => b.Value).ToList();
+
+                                    var dyn = CsQ.Groups.SelectMany(g => g.Members).Cast<dynamic>();
+                                    var dyn2 = ((IEnumerable<dynamic>)CsQ.Groups);
+
+                                    var uri0 =
+                                    from g in dyn2
+                                    where
+                                        (from dynamic agent in g.AgentsByUri
+                                         where agent.Name = "AgentsByUri"  //this line may be redundant
+                                         from dynamic x in agent.Value
+                                         select x.AbsoluteUri).Contains("SomeValue")
+                                    select member.Value;
+
+
+var uri0 =
+from g in CsQ.Groups
+from dynamic member in g.Members
+where
+    (from dynamic agent in member.AgentsByUri
+     where agent.Name = "AgentsByUri"  //this line may be redundant
+     from dynamic x in agent.Value
+     select x.AbsoluteUri).Contains("SomeValue")
+select member.Value;
+
+var uri2 = CsQ.Groups.SelectMany(g => g.Members).Cast<dynamic>().Where(member => member.Name == "AgentsByUri" && member.Value != null && member.Value.Any(uri => uri.AbsoluteUri == "SomeValue")).ToList();
+var uri1 = CsQ.Groups.SelectMany(g => g.Members).Cast<dynamic>().Where(member => member.Name == "AgentsByUri").Select(b => b.Value).Where(x => x.AbsoluteUri == "SomeValue");
+
+
+.Where(b => b.Value.Equals("sip:Adrian.Hawker@lexel.co.nz")
+var test2 = (dynamic)CsQ.Groups.SelectMany(q => q.Members.Select(a => new { A = a, Q = q }).Where(qa => qa.A.Name == "AgentsByUri"));
+var test3 = (dynamic)(CsQ.Groups.Where(q => q.Members.Any(a => a.Value == "AgentsByUri")));
+
+                                    
+                                    
+            var test4 = from question in CsQ.Groups
+            from answer in question.Members
+            where answer.Name == "something"
+            select question; // or select answer
+
+                                    var groupMembershipFilter =
+                                        (dynamic)CsQ.Groups.Where(
+                                            x => x.Members["AgentsByUri"].Value != null)
+                                            .ToList();
+
+                                    var groupMembershipFilter2 =
+                                        groupMembershipFilter.Where(
+                                            y => y.AbsoluteUri.ToString() == "Andrew Test")
+                                            .ToList();
+
+                                    dynamic t = as dynamic(CsQ.Groups.AgentsByUri.ToString());
+
+                                    foreach (dynamic groupMembership in groupMembershipFilter)
+                                    {
+                                        MessageBox.Show(groupMembership.AgentsByUri.AbsoluteUri.ToString());
+                                    }

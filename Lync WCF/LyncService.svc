@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="Lync_WCF.Service" CodeBehind="LyncService.svc.cs" %>

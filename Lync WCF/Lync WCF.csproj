@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A8A5827F-627B-4E9F-8C01-E680996186AA}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Lync_WCF</RootNamespace>
+    <AssemblyName>Lync WCF</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <WcfConfigValidationEnabled>True</WcfConfigValidationEnabled>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Crm2011.Linq">
+      <HintPath>_libs\Crm2011.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="microsoft.xrm.sdk">
+      <HintPath>_libs\microsoft.xrm.sdk.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.4.4.0-beta2\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>_libs\System.Management.Automation.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="LyncService.svc" />
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Constrants.cs" />
+    <Compile Include="CRM\CrmConnection.cs" />
+    <Compile Include="CRM\CRMEntities.cs" />
+    <Compile Include="Exchange\UmServerManager.cs" />
+    <Compile Include="Logging_old.cs" />
+    <Compile Include="LyncService.svc.cs">
+      <DependentUpon>LyncService.svc</DependentUpon>
+    </Compile>
+    <Compile Include="ILyncService.cs" />
+    <Compile Include="Lync\LyncPolicyTemplates.cs" />
+    <Compile Include="Lync\LyncPolicyManager.cs" />
+    <Compile Include="Lync\LyncServerManager.cs" />
+    <Compile Include="Lync\LyncUserManager.cs" />
+    <Compile Include="Lync\PhoneNumber.cs" />
+    <Compile Include="Lync\Policies.cs" />
+    <Compile Include="Lync\PolicyType.cs" />
+    <Compile Include="Lync\TelephonyOption.cs" />
+    <Compile Include="NotFoundException.cs" />
+    <Compile Include="PowershellExecutionException.cs" />
+    <Compile Include="PowershellResultException.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PsFactory.cs" />
+    <Compile Include="Lync\PsLyncFactory.cs" />
+    <Compile Include="CRM\Region.cs" />
+    <Compile Include="Lync\LyncDomainManager.cs" />
+    <Compile Include="Exchange\UmUserManager.cs" />
+    <Compile Include="Utilities.cs" />
+    <Compile Include="XDocument.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+    <None Include="Properties\PublishProfiles\Disk.pubxml" />
+    <None Include="Properties\PublishProfiles\paul.pubxml" />
+    <EmbeddedResource Include="Scripts\EnableCsUser.ps1" />
+    <EmbeddedResource Include="Scripts\DisableCsUser.ps1" />
+    <EmbeddedResource Include="Scripts\EnableUmMailbox.ps1" />
+    <EmbeddedResource Include="Scripts\DisableUmMailbox.ps1" />
+    <EmbeddedResource Include="Scripts\GetExchangeRemotingUrl.ps1" />
+    <EmbeddedResource Include="Scripts\SetUmMailboxPin.ps1" />
+    <EmbeddedResource Include="Scripts\AddSipDomain.ps1" />
+    <EmbeddedResource Include="Scripts\RemoveSipDomain.ps1" />
+    <EmbeddedResource Include="Scripts\EnableCsComputer.ps1" />
+    <EmbeddedResource Include="Scripts\AddSimpleUrl.ps1" />
+    <EmbeddedResource Include="Scripts\RemoveSimpleUrl.ps1" />
+    <EmbeddedResource Include="Scripts\AddCallLocation.ps1" />
+    <EmbeddedResource Include="Scripts\RemoveCallLocation.ps1" />
+    <EmbeddedResource Include="Scripts\ClearUserGroupingID.ps1" />
+    <EmbeddedResource Include="Scripts\SetUserGroupingID.ps1" />
+    <EmbeddedResource Include="Scripts\GrantCsUserPolicies.ps1" />
+    <EmbeddedResource Include="Scripts\GetArchivingPolicy.ps1" />
+    <EmbeddedResource Include="Scripts\GetClientPolicy.ps1" />
+    <EmbeddedResource Include="Scripts\GetClientVersionPolicy.ps1" />
+    <EmbeddedResource Include="Scripts\GetConferencingPolicy.ps1" />
+    <EmbeddedResource Include="Scripts\GetExternalAccessPolicy.ps1" />
+    <EmbeddedResource Include="Scripts\GetHostedVoiceMailPolicy.ps1" />
+    <EmbeddedResource Include="Scripts\GetLocationPolicy.ps1" />
+    <EmbeddedResource Include="Scripts\GetPINPolicy.ps1" />
+    <EmbeddedResource Include="Scripts\GetPresencePolicy.ps1" />
+    <EmbeddedResource Include="Scripts\GetUserExperiencePolicy.ps1" />
+    <EmbeddedResource Include="Scripts\GetVoicePolicy.ps1" />
+    <EmbeddedResource Include="Scripts\GetDialPlans.ps1" />
+    <EmbeddedResource Include="Scripts\GetPools.ps1" />
+    <EmbeddedResource Include="Scripts\SetTelephonyOption.ps1" />
+    <EmbeddedResource Include="Scripts\AddPstnUsage.ps1" />
+    <EmbeddedResource Include="Scripts\RemovePstnUsage.ps1" />
+    <EmbeddedResource Include="Scripts\AddUmDialPlan.ps1" />
+    <EmbeddedResource Include="Scripts\RemoveUmDialPlan.ps1" />
+    <EmbeddedResource Include="Scripts\RemotingMailboxUrl.ps1" />
+    <EmbeddedResource Include="Scripts\EnableUmMailboxRemoting.ps1" />
+    <EmbeddedResource Include="Scripts\DisableUmMailboxRemoting.ps1" />
+    <EmbeddedResource Include="Scripts\SetUmMailboxPinRemoting.ps1" />
+    <EmbeddedResource Include="Scripts\AddSubscriberContact.ps1" />
+    <EmbeddedResource Include="Scripts\AddUmDialPlanRemoting.ps1" />
+    <EmbeddedResource Include="Scripts\RemoveSubscriberContact.ps1" />
+    <EmbeddedResource Include="Scripts\RemoveUmDialPlanRemoting.ps1" />
+    <EmbeddedResource Include="Scripts\SetCsRgsAgentGroup.ps1" />
+    <EmbeddedResource Include="Scripts\GetCsPool_Registrar.ps1" />
+    <EmbeddedResource Include="Scripts\GetCsRgsAgentGroup.ps1" />
+    <EmbeddedResource Include="Scripts\GetCsRgsHolidaySet.ps1" />
+    <EmbeddedResource Include="Scripts\GetCsRgsHoursOfBusiness.ps1" />
+    <EmbeddedResource Include="Scripts\GetCsRgsQueue.ps1" />
+    <EmbeddedResource Include="Scripts\GetCsRgsWorkflow.ps1" />
+    <EmbeddedResource Include="Scripts\GetCsUser.ps1" />
+    <EmbeddedResource Include="Scripts\GetCsSipDomain.ps1" />
+    <EmbeddedResource Include="Scripts\GetCsUnassignedNumber.ps1" />
+    <EmbeddedResource Include="Scripts\NewCsRgsCallAction.ps1" />
+    <EmbeddedResource Include="Scripts\SetCsRgsQueue.ps1" />
+    <EmbeddedResource Include="Scripts\GetNumberInventory.ps1" />
+    <EmbeddedResource Include="Scripts\SetCsRgsHoursOfBusiness.ps1" />
+    <EmbeddedResource Include="Scripts\SetCsRgsHolidaySet.ps1" />
+    <EmbeddedResource Include="Scripts\GetCsUserPolicies.ps1" />
+    <EmbeddedResource Include="Scripts\SetCsRgsWorkflow.ps1" />
+    <EmbeddedResource Include="Scripts\SetCsRgsWorkflow_v2.ps1" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Logging\Logging.csproj">
+      <Project>{d2131afc-d85b-4192-ac5b-fa5c0468ca73}</Project>
+      <Name>Logging</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:58039/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

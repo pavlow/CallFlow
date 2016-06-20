@@ -1,0 +1,243 @@
+﻿<UserControl x:Class="CallFlowManager.UI.Views.BusinessHours"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:myCtrls="clr-namespace:CallFlowManager.UI.Views"
+             xmlns:converters="clr-namespace:CallFlowManager.UI.Converters"
+             xmlns:validationRules="clr-namespace:CallFlowManager.UI.Common.ValidationRules"
+             d:DesignHeight="900" d:DesignWidth="900"
+             mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <converters:NullToBooleanFalse x:Key="NullToBooleanFalse" />
+        <converters:NullToBooleanFalse x:Key="NullToBooleanTrue" />
+    </UserControl.Resources>
+    
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="33*" />
+                <ColumnDefinition Width="34*" MinWidth="300"/>
+                <ColumnDefinition Width="33*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Orientation="Horizontal"  Margin="0,2,0,2">
+                <Button IsEnabled="{Binding IsEnabled}" Command="{Binding Load}" Width="53" Focusable="False">Refresh</Button>
+                <Button IsEnabled="{Binding IsEnabled}" Command="{Binding UpdateCommand}" Width="53" Focusable="False">Save</Button>
+                <Button IsEnabled="False" Command="{Binding DeleteCommand}" Width="53" Focusable="False">Delete</Button>
+                <Button IsEnabled="{Binding IsEnabled}" Command="{Binding ClearCommand}" Width="40" Focusable="False">Clear</Button>
+                <controls:ProgressRing IsActive="{Binding IsLoading}" Visibility="Visible" Foreground="{DynamicResource AccentColorBrush}"/>
+                <TextBlock TextWrapping="Wrap" Text="{Binding StatusBar}" Width="620" Margin="0,17,0,0"/>
+            </StackPanel>
+
+            <myCtrls:LogWindow Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"></myCtrls:LogWindow>
+
+            <Label Grid.Column="0" Grid.Row="2" Content="Business Hours Groups" Margin="0,2,0,2"/>
+            <Label Grid.Column="1" Grid.Row="2" Content="Open/Close Times"/>
+
+            <ListView Grid.Column="0"
+                  Grid.Row="3"
+                  ItemsSource="{Binding BusinessHoursGroups, UpdateSourceTrigger=PropertyChanged}"
+                  SelectedItem="{Binding SelectedHourGroup, UpdateSourceTrigger=PropertyChanged}"
+                  Margin="0,5,5,0"
+                  BorderBrush="Gray"
+                  BorderThickness="1"
+                  HorizontalAlignment="Stretch">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn  Header="Name" Width="320" DisplayMemberBinding="{Binding Name}">
+                            <GridViewColumn.HeaderContainerStyle>
+                                <Style TargetType="{x:Type GridViewColumnHeader}">
+                                    <Setter Property="Background" Value="#00AEDE" />
+                                    <Setter Property="Foreground" Value="White" />
+                                    <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                </Style>
+                            </GridViewColumn.HeaderContainerStyle>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+            <DataGrid Grid.Column="1"
+                  Grid.ColumnSpan="2"
+                  Grid.Row="3"
+                  ItemsSource="{Binding SelectedHourGroup.OpenCloseTimes, UpdateSourceTrigger=PropertyChanged}"
+                  SelectedItem="{Binding SelectedOpenCloseTime, UpdateSourceTrigger=PropertyChanged}"
+                  AutoGenerateColumns="False"
+                  Margin="5,5,5,0"
+                  BorderBrush="Gray" 
+                  BorderThickness="1">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding DayOfWeek}" Header="Day" Width="2*"/>
+                    <DataGridTextColumn Binding="{Binding OpenTime1}" Header="Open Time 1" Width="1*"/>
+                    <DataGridTextColumn Binding="{Binding CloseTime1}" Header="Close Time 1" Width="1*"/>
+                    <DataGridTextColumn Binding="{Binding OpenTime2}" Header="Open Time 2" Width="1*"/>
+                    <DataGridTextColumn Binding="{Binding CloseTime2}" Header="Close Time 2" Width="1*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Vertical" Margin="0,5,5,5">
+                <Label Content="Business Hours Group Name" />
+                <!--<TextBox Text="{Binding Path=NewHourGroup.Name}" controls:TextBoxHelper.Watermark="Required to Add (new group)"/>-->
+                <TextBox Name="BusinessHoursGroupName" controls:TextBoxHelper.Watermark="Required to Add (new group)">
+                    <TextBox.Text>
+                        <Binding Path="HoursGroupName" UpdateSourceTrigger="PropertyChanged"  ValidatesOnDataErrors="True">
+                            <Binding.ValidationRules>
+                                <validationRules:AlphaNumericSymbolsRule Message="Use alphabetic symbols or numeric"/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+
+                <Label Content="Pool:" Margin="0,5,0,0"/>
+                <ComboBox ItemsSource="{Binding Pools, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedHourGroup.OwnerPool, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+
+            <WrapPanel Grid.Column="0" Grid.Row="5" HorizontalAlignment="Left" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,5,5,5">
+                <Button Command="{Binding AddGroupCommand}" Content="Add" Focusable="False">
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MetroButton}" >
+                            <Setter Property="Height" Value="30"/>
+                            <Setter Property="Width" Value="100"/>
+                            <Setter Property="Margin" Value="0,4,4,0"/>
+                            <Setter Property="IsEnabled" Value="True" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding NewHourGroup.Name}" Value="{x:Null}">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsUniqueGroupName}" Value="false">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding SelectedHourGroup.OwnerPool}" Value="{x:Null}">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding (Validation.HasError), ElementName=BusinessHoursGroupName}" Value="true" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button Command="{Binding RemoveGroupCommand}" Focusable="False" IsEnabled="{Binding SelectedHourGroup, Converter={StaticResource NullToBooleanFalse}}" Content = "Remove"></Button>
+
+
+                <Button IsEnabled="False" Command="{Binding BulkAddGroupCommand}" Focusable="False">Bulk Add</Button>
+            </WrapPanel>
+
+            <StackPanel Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="4" Orientation="Vertical" Margin="5,5,0,5">
+                <Label Content="Day of Week" />
+                <ComboBox ItemsSource="{Binding DayOfWeeks, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Value" DisplayMemberPath="Key" SelectedValue="{Binding NewOpenCloseTime.DayOfWeek, UpdateSourceTrigger=PropertyChanged}" />
+
+                <Grid Margin="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Column="0" Grid.Row="0" Content="Open Time" Margin="0,5,0,0"/>
+                    <Label Grid.Column="1" Grid.Row="0" Content="Close Time" Margin="0,5,0,0"/>
+                    <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" Margin="0,0,10,10">
+                        <ComboBox Name="OpenTime1Hour" ItemsSource="{Binding Hours}" SelectedItem="{Binding OpenTime1Hour, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" ItemStringFormat="00"/>
+                        <Label Content=":"/>
+                        <ComboBox ItemsSource="{Binding Minutes}" SelectedItem="{Binding OpenTime1Minute, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" ItemStringFormat="00"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal" Margin="0,0,10,10">
+                        <ComboBox ItemsSource="{Binding Hours}" SelectedItem="{Binding CloseTime1Hour, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" ItemStringFormat="00"/>
+                        <Label Content=":" />
+                        <ComboBox ItemsSource="{Binding Minutes}" SelectedItem="{Binding CloseTime1Minute, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" ItemStringFormat="00"/>
+                    </StackPanel>
+                    <WrapPanel  Grid.Column="2" Grid.Row="2" Orientation="Horizontal">
+                        <controls:ToggleSwitch IsChecked="{Binding NewOpenCloseTime.OpenCloseTime1Enabled, UpdateSourceTrigger=PropertyChanged}"/>
+                    </WrapPanel>
+
+                    <Label Grid.Column="0" Grid.Row="4" Content="Open Time"/>
+                    <Label Grid.Column="1" Grid.Row="4" Content="Close Time"/>
+                    <StackPanel Grid.Column="0" Grid.Row="5" Orientation="Horizontal" Margin="0,0,10,0">
+                        <ComboBox  ItemsSource="{Binding Hours}" SelectedItem="{Binding OpenTime2Hour, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" ItemStringFormat="00"/>
+                        <Label Content=":"/>
+                        <ComboBox ItemsSource="{Binding Minutes}" SelectedItem="{Binding OpenTime2Minute, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" ItemStringFormat="00"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Grid.Row="5" Orientation="Horizontal" Margin="0,0,10,0">
+                        <ComboBox ItemsSource="{Binding Hours}" SelectedItem="{Binding CloseTime2Hour, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" ItemStringFormat="00"/>
+                        <Label Content=":"/>
+                        <ComboBox ItemsSource="{Binding Hours}" SelectedItem="{Binding CloseTime2Minute, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" ItemStringFormat="00"/>
+                    </StackPanel>
+                    <WrapPanel Grid.Column="2" Grid.Row="5" Orientation="Horizontal">
+                        <controls:ToggleSwitch IsChecked="{Binding NewOpenCloseTime.OpenCloseTime2Enabled, UpdateSourceTrigger=PropertyChanged}"/>
+                    </WrapPanel>
+                    <!--<StackPanel Grid.Column="3" Grid.Row="2" >
+                        <TextBlock Margin ="0, 5, 5, 0" Text="{Binding MessageTime1}" HorizontalAlignment="Left" TextWrapping="Wrap" Background="Crimson" Foreground="White" FontSize="16"></TextBlock>
+                    </StackPanel>
+                    <StackPanel Grid.Column="3" Grid.Row="5" >
+                        <TextBlock Margin ="0, 5, 5, 0" Text="{Binding MessageTime2}" HorizontalAlignment="Left" TextWrapping="Wrap" Background="Crimson" Foreground="White" FontSize="16"></TextBlock>
+                    </StackPanel>-->
+                </Grid>
+            </StackPanel>
+
+            <WrapPanel Grid.Column="1" Grid.Row="5" HorizontalAlignment="Left" Orientation="Horizontal" VerticalAlignment="Top" Margin="5">
+                <Button Command="{Binding AddBusinessHoursCommand}" Content="Add" >
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource MetroButton}" >
+                            <Setter Property="Height" Value="30"/>
+                            <Setter Property="Width" Value="100"/>
+                            <Setter Property="Margin" Value="0,4,4,0"/>
+                            <Setter Property="IsEnabled" Value="True" />
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding ElementName=OpenTime1Hour, Path=(Validation.HasError)}" Value="true" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </MultiDataTrigger>
+                                <DataTrigger Binding="{Binding Path=SelectedHourGroup}" Value="{x:Null}">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=NewOpenCloseTime.DayOfWeek}" Value="{x:Null}">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=IsUniqueDayOfWeek}" Value="false">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                                <!--<DataTrigger Binding="{Binding MessageTime1, Converter={StaticResource NullToBooleanTrue}}" Value="true">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding MessageTime2, Converter={StaticResource NullToBooleanTrue}}" Value="true">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>-->
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <!--<Button Command="{Binding AddBusinessHoursCommand}" Focusable="False" IsEnabled="{Binding SelectedHourGroup, Converter={StaticResource NullToBooleanFalse}}" Content = "Add"></Button>-->
+                <Button Command="{Binding RemoveBusinessHoursCommand}" Focusable="False" Content = "Remove" IsEnabled="{Binding SelectedOpenCloseTime, Converter={StaticResource NullToBooleanFalse}}"></Button>
+            </WrapPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

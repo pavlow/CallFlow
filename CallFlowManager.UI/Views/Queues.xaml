@@ -1,0 +1,245 @@
+﻿<UserControl x:Class="CallFlowManager.UI.Views.Queues"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns:converters="clr-namespace:CallFlowManager.UI.Converters"
+             xmlns:myCtrls="clr-namespace:CallFlowManager.UI.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="966">
+
+    <UserControl.Resources>
+        <converters:NoDataConverter x:Key="NoDataConverter" />
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <converters:NullVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <converters:TransferToQueueToBoolConverter x:Key="TransferToQueueToBoolConverter"/>
+        <converters:TransferToUriToBoolConverter x:Key="TransferToUriToBoolConverter"/>
+        <converters:MultiValueBoolConverter x:Key="MultiValueBoolConverter"/>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <Grid DockPanel.Dock="Top" Margin="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="34*"/>
+            <ColumnDefinition Width="33*"/>
+            <ColumnDefinition Width="33*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" MinHeight="257"/>
+            <RowDefinition Height="Auto" MinHeight="34"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <ComboBox Grid.Row="0" 
+                  Grid.Column="0" 
+                  Width="Auto" 
+                  Height="26" 
+                  Margin="10,0,10,0"
+                  ItemsSource="{Binding Queues}" 
+                  SelectedItem="{Binding SelectedQueue}" 
+                  DisplayMemberPath="Name"/>
+
+        <WrapPanel Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal">
+                <Button IsEnabled="{Binding IsEnabled}" Command="{Binding LoadCommand}" Width="53" Focusable="False">Refresh</Button>
+                <Button IsEnabled="{Binding IsEnabled}" Command="{Binding CreateCommand}" Width="53" Focusable="False">Save</Button>
+                <Button IsEnabled="False" Command="{Binding DeleteCommand}" Width="53" Focusable="False">Delete</Button>
+                <Button IsEnabled="{Binding IsEnabled}" Command="{Binding ClearCommand}" Width="40" Focusable="False">Clear</Button>
+            <controls:ProgressRing IsActive="{Binding IsLoading}" Visibility="Visible" Foreground="{DynamicResource AccentColorBrush}"/>
+            <TextBlock TextWrapping="Wrap" Text="{Binding StatusBar}" Width="350" Margin="0,17,0,0" RenderTransformOrigin="0.5,0.5">
+                <TextBlock.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="0.06"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </TextBlock.RenderTransform>
+            </TextBlock>
+        </WrapPanel>
+
+            <myCtrls:LogWindow Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"></myCtrls:LogWindow>
+
+            <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Vertical" Margin="10,10,10,0">
+            <Label Content="Display Name"/>
+                <TextBox Text="{Binding Path=CurrentQueue.Name, UpdateSourceTrigger=PropertyChanged}"/>
+            <Label Content="Pool"/>
+                <ComboBox ItemsSource="{Binding Pools}"  SelectedItem="{Binding CurrentQueue.OwnerPool, UpdateSourceTrigger=PropertyChanged}"/>
+            <Label Content="Description"/>
+                <TextBox TextWrapping ="Wrap" Text="{Binding Path=CurrentQueue.Description, UpdateSourceTrigger=PropertyChanged}" Height="124"/>
+            <Label Content="Ring agents in these call groups" Margin="0,20,0,0"/>
+        </StackPanel>
+            <StackPanel Grid.Column="1" Grid.Row="2" Margin="10,10,8.5,10">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Queue Timeout Destination"/>
+                    <controls:ToggleSwitch IsChecked="{Binding Path=CurrentQueue.TimeoutOn, UpdateSourceTrigger=PropertyChanged}" OffLabel="" OnLabel="" Margin="10,3,0,0" Name="TimeoutDestinationToggleSwitch"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Slider Grid.Column="0"
+                        Grid.Row="2"
+                        IsEnabled="{Binding CurrentQueue.TimeoutOn}"
+                        Value="{Binding CurrentQueue.Timeout, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Minimum="10"
+                        Maximum="7200" 
+                        LargeChange="1"
+                        SmallChange="1"
+                        TickFrequency="1"
+                        IsSnapToTickEnabled="True"
+                        Width="230"
+                        Margin="0,12,0,0"/>
+                <TextBox Grid.Column="1"
+                           Grid.Row="2"
+                            IsEnabled="{Binding CurrentQueue.TimeoutOn}"
+                           Text="{Binding CurrentQueue.Timeout,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right"
+                           Margin="10"
+                           Width="40"/>
+            </StackPanel>
+                <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="3">
+                <Label IsEnabled="{Binding CurrentQueue.TimeoutOn}" Content="After"/>
+                <Label IsEnabled="{Binding CurrentQueue.TimeoutOn}" Content="{Binding Path=CurrentQueue.Timeout}"/>
+                <Label IsEnabled="{Binding CurrentQueue.TimeoutOn}" Content="seconds send to"/>
+            </StackPanel>
+
+            <StackPanel HorizontalAlignment="Left">
+                    <ComboBox IsEnabled="{Binding CurrentQueue.TimeoutOn}" ItemsSource="{Binding Destinations}" SelectedValuePath="Value" DisplayMemberPath="Key" SelectedValue="{Binding CurrentQueue.TimeoutDestination, UpdateSourceTrigger=PropertyChanged}" Width="130" Height="26" Margin="0,0,0,10" Name="TimeoutDestinationCombobox"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <!--<TextBox IsEnabled="{Binding ElementName=TimeoutDestinationCombobox, Path=SelectedValue, Converter={StaticResource TransferToUriToBoolConverter}}" Text="{Binding CurrentQueue.TimeoutUri}" Width="130" Height="26">-->
+                    <TextBox Text="{Binding CurrentQueue.TimeoutUri, UpdateSourceTrigger=PropertyChanged}" Width="130" Height="26">
+                    <TextBox.IsEnabled>
+                        <MultiBinding Converter="{StaticResource MultiValueBoolConverter}">
+                            <Binding ElementName="TimeoutDestinationCombobox" Path="SelectedValue" Converter="{StaticResource TransferToUriToBoolConverter}"/>
+                            <Binding ElementName="TimeoutDestinationToggleSwitch" Path="IsChecked"/>
+                        </MultiBinding>
+                </TextBox.IsEnabled>
+                </TextBox>
+
+
+                <Label IsEnabled="{Binding CurrentQueue.TimeoutOn}" Content="@"/>
+                <!--<ComboBox IsEnabled="{Binding CurrentQueue.TimeoutOn}" ItemsSource="{Binding SipDomains}" SelectedItem="{Binding CurrentQueue.TimeoutSipDomain}" Width="130" Height="26">-->
+                    <ComboBox ItemsSource="{Binding SipDomains}" SelectedItem="{Binding CurrentQueue.TimeoutSipDomain, UpdateSourceTrigger=PropertyChanged}" Width="130" Height="26">
+                    <ComboBox.IsEnabled>
+                        <MultiBinding Converter="{StaticResource MultiValueBoolConverter}">
+                            <Binding ElementName="TimeoutDestinationCombobox" Path="SelectedValue" Converter="{StaticResource TransferToUriToBoolConverter}"/>
+                            <Binding ElementName="TimeoutDestinationToggleSwitch" Path="IsChecked"/>
+                        </MultiBinding>
+                    </ComboBox.IsEnabled>
+                </ComboBox>
+                    
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Left">
+                <!--http://stackoverflow.com/questions/6468160/make-button-enabled-disabled-depending-on-the-textbox-text-property-in-wpf-->
+                <!--http://stackoverflow.com/questions/945427/c-sharp-wpf-isenabled-using-multiple-bindings-->
+                    <ComboBox ItemsSource="{Binding CurrentQueue.QueuesFiltered}" Name="TimeoutQueue" DisplayMemberPath="Name" SelectedItem="{Binding CurrentQueue.TimeoutQueue, UpdateSourceTrigger=PropertyChanged}" Width="285" Height="26" Margin="0,10,0,0">
+                    <ComboBox.IsEnabled>
+                        <MultiBinding Converter="{StaticResource MultiValueBoolConverter}">
+                            <Binding ElementName="TimeoutDestinationCombobox" Path="SelectedValue" Converter="{StaticResource TransferToQueueToBoolConverter}"/>
+                            <Binding ElementName="TimeoutDestinationToggleSwitch" Path="IsChecked"  />
+                        </MultiBinding>
+                    </ComboBox.IsEnabled>
+                </ComboBox>
+                <!--<ComboBox IsEnabled="{Binding ElementName=TimeoutDestinationCombobox, Path=SelectedValue, Converter={StaticResource TransferToQueueToBoolConverter}}" ItemsSource="{Binding Queues}" Name="TimeoutQueue" DisplayMemberPath="Name" SelectedItem="{Binding CurrentQueue.TimeoutQueue}" Width="285" Height="26" Margin="0,10,0,0"/>-->
+            </StackPanel>
+        </StackPanel>
+            <StackPanel Grid.Column="2" Grid.Row="2" Margin="9.5,10,10,10">
+            <StackPanel Orientation="Horizontal">
+                <Label Grid.Column ="0" Grid.Row="0" Content="Queue Overflow Destination"/>
+                    <controls:ToggleSwitch IsChecked="{Binding CurrentQueue.OverflowOn, UpdateSourceTrigger=PropertyChanged}" OffLabel="" OnLabel="" Margin="10,3,0,0" Name="OverflowDestinationToggleSwitch"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Slider Grid.Column="0"
+                        Grid.Row="2"
+                        IsEnabled="{Binding CurrentQueue.OverflowOn}"
+                        Value="{Binding CurrentQueue.OverFlow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Minimum="0"
+                        Maximum="1000"
+                        LargeChange="1"
+                        SmallChange="1"
+                        TickFrequency="1"
+                        IsSnapToTickEnabled="True"
+                        Width="230"
+                        Margin="0, 12, 0, 0"/>
+                <TextBox Grid.Column="1"
+                            Grid.Row="2"
+                            IsEnabled="{Binding CurrentQueue.OverflowOn}"   
+                            Text="{Binding Path=CurrentQueue.OverFlow,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Margin="10"
+                            Width="40"/>
+            </StackPanel>
+                <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="3">
+                <Label IsEnabled="{Binding CurrentQueue.OverflowOn}" Content="After"/>
+                <Label IsEnabled="{Binding CurrentQueue.OverflowOn}" Content="{Binding Path=CurrentQueue.OverFlow}"/>
+                <Label IsEnabled="{Binding CurrentQueue.OverflowOn}" Content="concurrent calls send the"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                    <ComboBox IsEnabled="{Binding CurrentQueue.OverflowOn}" ItemsSource="{Binding QueueOverFlowCandidates}" SelectedValuePath="Value" DisplayMemberPath="Key" SelectedValue="{Binding CurrentQueue.OverFlowCandidate, UpdateSourceTrigger=PropertyChanged}" Width="130" Height="26" Margin="0,0,0,10"/>
+                <Label IsEnabled="{Binding CurrentQueue.OverflowOn}">to</Label>
+                    <ComboBox IsEnabled="{Binding CurrentQueue.OverflowOn}" ItemsSource="{Binding Destinations}" SelectedValuePath="Value" DisplayMemberPath="Key" SelectedValue="{Binding CurrentQueue.OverFlowDestination, UpdateSourceTrigger=PropertyChanged}" Width="130" Height="26" Margin="0,0,0,10" Name="OverflowDestinationComboBox"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <!--<TextBox IsEnabled="{Binding CurrentQueue.OverflowOn}" Text="{Binding CurrentQueue.OverFlowUri}" Width="130" Height="26"/>-->
+                    <TextBox Text="{Binding CurrentQueue.OverFlowUri, UpdateSourceTrigger=PropertyChanged}" Width="130" Height="26">
+                    <TextBox.IsEnabled>
+                        <MultiBinding Converter="{StaticResource MultiValueBoolConverter}">
+                            <Binding ElementName="OverflowDestinationComboBox" Path="SelectedValue" Converter="{StaticResource TransferToUriToBoolConverter}"/>
+                            <Binding ElementName="OverflowDestinationToggleSwitch" Path="IsChecked"/>
+                        </MultiBinding>
+                    </TextBox.IsEnabled>
+                </TextBox>
+                <Label IsEnabled="{Binding CurrentQueue.OverflowOn}">@</Label>
+                <!--<ComboBox IsEnabled="{Binding CurrentQueue.OverflowOn}" ItemsSource="{Binding SipDomains}" SelectedItem="{Binding CurrentQueue.OverFlowSipDomain}" Width="130" Height="26"/>-->
+                    <ComboBox ItemsSource="{Binding SipDomains}" SelectedItem="{Binding CurrentQueue.OverFlowSipDomain, UpdateSourceTrigger=PropertyChanged}" Width="130" Height="26">
+                    <ComboBox.IsEnabled>
+                        <MultiBinding Converter="{StaticResource MultiValueBoolConverter}">
+                            <Binding ElementName="OverflowDestinationComboBox" Path="SelectedValue" Converter="{StaticResource TransferToUriToBoolConverter}"/>
+                            <Binding ElementName="OverflowDestinationToggleSwitch" Path="IsChecked"/>
+                        </MultiBinding>
+                    </ComboBox.IsEnabled>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Left">
+                <!--<ComboBox IsEnabled="{Binding CurrentQueue.OverflowOn}" ItemsSource="{Binding Queues}" Name="OverflowQueue" DisplayMemberPath="Name" SelectedItem="{Binding CurrentQueue.OverFlowQueue}" Width="285" Height="26" Margin="0,10,0,0"/>-->
+                    <ComboBox ItemsSource="{Binding CurrentQueue.QueuesFiltered}" Name="OverflowQueue" DisplayMemberPath="Name" SelectedItem="{Binding CurrentQueue.OverFlowQueue, UpdateSourceTrigger=PropertyChanged}" Width="285" Height="26" Margin="0,10,0,0">
+                    <ComboBox.IsEnabled>
+                        <MultiBinding Converter="{StaticResource MultiValueBoolConverter}">
+                            <Binding ElementName="OverflowDestinationComboBox" Path="SelectedValue" Converter="{StaticResource TransferToQueueToBoolConverter}"/>
+                            <Binding ElementName="OverflowDestinationToggleSwitch" Path="IsChecked"/>
+                        </MultiBinding>
+                    </ComboBox.IsEnabled>
+                </ComboBox>
+            </StackPanel>
+        </StackPanel>
+            <ComboBox Grid.Row="3" Grid.Column="0" 
+            ItemsSource="{Binding CurrentQueue.GroupsFiltered}"
+                  SelectedItem="{Binding SelectedGroup, UpdateSourceTrigger=PropertyChanged}" 
+                  DisplayMemberPath="Name"
+                  Width="Auto" 
+                  Height="26" 
+                  Margin="10,0,10,0" 
+                  VerticalAlignment="Top"/>
+            <WrapPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment ="Top" Orientation="Horizontal" Height="30">
+                <Button Margin="10,0,0,0" Width="100" Command="{Binding QAgentCallGroupsAddCommand}" Focusable="False">Add</Button>
+                <Button Margin="10,0,0,0" Width="100" Command="{Binding QAgentCallGroupsRemoveCommand}" Focusable="False">Remove</Button>
+                <Button Margin="10,0,0,0" Width="50" Command="{Binding QAgentCallGroupsUpCommand}" Focusable="False">Up</Button>
+                <Button Margin="10,0,0,0" Width="50" Command="{Binding QAgentCallGroupsDnCommand}" Focusable="False">Dn</Button>
+        </WrapPanel>
+        <DataGrid ItemsSource="{Binding Path=CurrentQueue.Groups}" 
+                  SelectedItem="{Binding SelectedAgent}" SelectedIndex="{Binding SelectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
+                  Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="10,10,10,-3" 
+                  AutoGenerateColumns="False" ColumnWidth="200*"  BorderThickness="1" BorderBrush="Gray" >
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding Name}" Header="Name"/>
+                <DataGridTextColumn Binding="{Binding AlertTime}" Header="Alert Time"/>
+                <DataGridTextColumn Binding="{Binding ParticipationPolicy}" Header="Participation Policy"/>
+                <DataGridTextColumn Binding="{Binding RoutingMethod}" Header="Routing Method"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+    </ScrollViewer>
+</UserControl>

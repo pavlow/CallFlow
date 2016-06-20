@@ -1,0 +1,208 @@
+﻿<UserControl x:Class="CallFlowManager.UI.Views.Holidays"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:views="clr-namespace:CallFlowManager.UI.Views"
+             xmlns:validationRules="clr-namespace:CallFlowManager.UI.Common.ValidationRules"
+             xmlns:converters="clr-namespace:CallFlowManager.UI.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="900" d:DesignWidth="900" >
+    <UserControl.Resources>
+        <converters:NullToBooleanFalse x:Key="NullToBooleanFalse" />
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="33*" />
+                <ColumnDefinition Width="36*" />
+                <ColumnDefinition Width="31*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,2,0,2">
+                <Button IsEnabled="{Binding IsEnabled}" Command="{Binding LoadCommand}" Width="53" Focusable="False">Refresh</Button>
+                <Button IsEnabled="{Binding IsEnabled}" Command="{Binding CreateCommand}" Width="53" Focusable="False">Save</Button>
+                <Button IsEnabled="False" Command="{Binding DeleteCommand}" Width="53" Focusable="False">Delete</Button>
+                <Button IsEnabled="{Binding IsEnabled}" Command="{Binding ClearCommand}" Width="40" Focusable="False">Clear</Button>
+                <controls:ProgressRing IsActive="{Binding IsLoading}" Visibility="Visible" Foreground="{DynamicResource AccentColorBrush}"/>
+                <TextBlock TextWrapping="Wrap" Text="{Binding StatusBar}" Width="620" Margin="0,17,0,0"/>
+            </StackPanel>
+
+            <views:LogWindow Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"></views:LogWindow>
+
+            <Label Grid.Column="0" Grid.Row="2" Content="Holiday Groups" Margin="0,2,0,2"/>
+            <Label Grid.Column="1" Grid.Row="2" Content="Holidays"/>
+
+            <ListView Grid.Column="0"
+                  Grid.Row="3"
+                  Margin="0,5,5,0"
+                  ItemsSource="{Binding HolidayGroups}"
+                  BorderBrush="Gray"
+                  BorderThickness="1"
+                  HorizontalAlignment="Stretch"
+                  SelectedItem="{Binding SelectedHolidayGroup, UpdateSourceTrigger=PropertyChanged}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="320">
+                            <GridViewColumn.HeaderContainerStyle>
+                                <Style TargetType="{x:Type GridViewColumnHeader}">
+                                    <Setter Property="Background" Value="#00AEDE" />
+                                    <Setter Property="Foreground" Value="White" />
+                                    <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                </Style>
+                            </GridViewColumn.HeaderContainerStyle>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+            <DataGrid Name ="HolidaysGrid" 
+                  Grid.Column="1"
+                  Grid.ColumnSpan="2"
+                  Grid.Row="3"
+                  Margin="5,5,2,5"
+                  ItemsSource="{Binding SelectedHolidayGroup.Holidays}" 
+                  SelectedItem="{Binding SelectedHolidayTime, UpdateSourceTrigger=PropertyChanged}"
+                  BorderThickness="1"
+                  BorderBrush="Gray"
+                  HorizontalAlignment="Stretch"
+                  AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Name}" Header="Name" Width="200*"/>
+                    <DataGridTextColumn Binding="{Binding StartHolidayDate.DateTime}" Header="Start Date" Width="200*"/>
+                    <DataGridTextColumn Binding="{Binding EndHolidayDate.DateTime}" Header="End Date" Width="200*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Vertical" Margin="0,10,5,10">
+                <Label Content="Holiday Group Name" />
+                <TextBox Name="HolidayGroupName" controls:TextBoxHelper.Watermark="Required to Add (new group)">
+                    <TextBox.Text>
+                        <Binding Path="HolidayGroupName" UpdateSourceTrigger="PropertyChanged"  ValidatesOnDataErrors="True">
+                            <Binding.ValidationRules>
+                                <validationRules:AlphaNumericSymbolsRule Message="Use alphabetic symbols or numeric"/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+                <Label Content="Pool" Margin="0,2,0,0" />
+                <ComboBox Name ="Pools" ItemsSource="{Binding Pools}" SelectedItem="{Binding NewHolidayGroup.OwnerPool, UpdateSourceTrigger=PropertyChanged}">
+                </ComboBox>
+
+            </StackPanel>
+
+            <StackPanel Grid.Column="0" Grid.Row="5" Orientation="Vertical" VerticalAlignment="Bottom">
+                <WrapPanel HorizontalAlignment="Left" Orientation="Horizontal">
+
+                    <Button Command="{Binding AddGroupCommand}" Focusable="False" Content="Add" >
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MetroButton}" >
+                                <Setter Property="Height" Value="30"/>
+                                <Setter Property="Width" Value="100"/>
+                                <Setter Property="Margin" Value="0,4,4,0"/>
+                                <Setter Property="IsEnabled" Value="True" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HolidayGroupName}" Value="{x:Null}">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsUniqueHolidayGroupName}" Value="false">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding NewHolidayGroup.OwnerPool}" Value="{x:Null}">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding (Validation.HasError), ElementName=HolidayGroupName}" Value="true" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Command="{Binding RemoveGroupCommand}" Focusable="False" IsEnabled="{Binding SelectedHolidayGroup, Converter={StaticResource NullToBooleanFalse}}" Content = "Remove"/>
+
+                </WrapPanel>
+                <Button Command="{Binding BulkAddGroupCommand}" HorizontalAlignment="Left" Content="Bulk Add"/>
+                <TextBlock><Hyperlink Command="{Binding OpenHolidaysCsvCommand}"><Run Text="Download Csv File"/></Hyperlink></TextBlock>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Grid.Row="4" Orientation="Vertical" Margin="5,10,0,10">
+                <Label Content="Holiday Name" />
+                <TextBox Name="HolidayName" controls:TextBoxHelper.Watermark="Required to Add (new holiday)">
+                    <TextBox.Text>
+                        <Binding Path="HolidayName" UpdateSourceTrigger="PropertyChanged"  ValidatesOnDataErrors="True">
+                            <Binding.ValidationRules>
+                                <validationRules:AlphaNumericSymbolsRule Message="Use alphabetic symbols or numeric"/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+
+                <Label Content="Start Date" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                    <DatePicker Name="StartDate" SelectedDate="{Binding StartDateTime, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Height="26" Width="176" DisplayDateStart="2015-01-01"/>
+                    <ComboBox ItemsSource="{Binding Hours}" SelectedItem="{Binding StartHour, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Width="Auto" Height="26" Margin="10,0,0,0" ItemStringFormat="00"/>
+                    <Label Content=":" Margin="2"/>
+                    <ComboBox ItemsSource="{Binding Minutes}" SelectedItem="{Binding StartMinute, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"  Width="Auto" Height="26" Margin="5,0,0,0" ItemStringFormat="00"/>
+                </StackPanel>
+                <Label Content="End Date" />
+                <StackPanel Orientation="Horizontal" Margin="0,2,0,2" HorizontalAlignment="Stretch">
+                    <DatePicker SelectedDate="{Binding EndDateTime, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Height="26" Width="176" DisplayDateStart="2015-01-01"/>
+                    <ComboBox ItemsSource="{Binding Hours}" SelectedItem="{Binding EndHour, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Width="Auto" Height="26" Margin="10,0,0,0" ItemStringFormat="00"/>
+                    <Label Content=":" Margin="2"/>
+                    <ComboBox ItemsSource="{Binding Minutes}" SelectedItem="{Binding EndMinute, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Width="Auto" Height="26" Margin="5,0,0,0" ItemStringFormat="00"/>
+                </StackPanel>
+
+            </StackPanel>
+
+            <StackPanel Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Orientation="Horizontal" VerticalAlignment="Top" Margin="5,2,0,2">
+
+                <Button Command="{Binding AddHolidayCommand}" Content="Add" >
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource MetroButton}" >
+                            <Setter Property="Height" Value="30"/>
+                            <Setter Property="Width" Value="100"/>
+                            <Setter Property="Margin" Value="0,4,4,0"/>
+                            <Setter Property="IsEnabled" Value="False" />
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding ElementName=HolidayName, Path=(Validation.HasError)}" Value="false" />
+                                        <Condition Binding="{Binding ElementName=StartDate, Path=(Validation.HasError)}" Value="false" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="IsEnabled" Value="True" />
+                                </MultiDataTrigger>
+                                <DataTrigger Binding="{Binding Path=NewHolidayTime.Name}" Value="">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=NewHolidayTime.Name}" Value="{x:Null}">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=IsUniqueHolidayName}" Value="false">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button Command="{Binding RemoveHolidayCommand}" Focusable="False" Content = "Remove" IsEnabled="{Binding SelectedHolidayTime, Converter={StaticResource NullToBooleanFalse}}"></Button>
+
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,1 @@
+Enable-CsComputer -ErrorAction:Stop;

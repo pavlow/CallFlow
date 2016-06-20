@@ -1,0 +1,6 @@
+[user]
+	email = pavlov.work75@gmail.com
+	name = pavlow
+[core]
+	autocrlf = true
+	safecrlf = true

@@ -1,0 +1,79 @@
+﻿<Application x:Class="CallFlowManager.UI.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             DispatcherUnhandledException="Application_DispatcherUnhandledException"
+             StartupUri="Views/MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="Button" BasedOn="{StaticResource MetroButton}">
+                <Setter Property="Height" Value="30"/>
+                <Setter Property="Width" Value="100"/>
+                <Setter Property="Margin" Value="0,4,4,0"/>
+            </Style>
+
+            <Style TargetType="DataGrid" BasedOn="{StaticResource AzureDataGrid}">
+                <Setter Property="BorderBrush" Value="Gray"/>
+                <Setter Property="CanUserAddRows" Value="False"/>
+                <Setter Property="IsReadOnly" Value="True"/>
+            </Style>
+
+            <Style TargetType="DataGridColumnHeader">
+                <Setter Property="Background" Value="#00ADDA"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Height" Value="35"/>
+                <Setter Property="Padding" Value="5"/>
+            </Style>
+
+            <Style TargetType="GridViewColumnHeader">
+                <Setter Property="Background" Value="#00ADDA"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Height" Value="35"/>
+                <Setter Property="Padding" Value="5"/>
+            </Style>
+
+            <Style TargetType="ComboBox" BasedOn="{StaticResource MetroComboBox}">
+                <Setter Property="Height" Value="10"/>
+                <Setter Property="Width" Value="Auto"/>
+            </Style>
+
+
+            <Style TargetType="TabItem" BasedOn="{StaticResource MetroTabItem}">
+                <Setter Property="controls:ControlsHelper.HeaderFontSize" Value="20"/>
+                <Setter Property="Foreground" Value="#00ADDA"/>
+                <Setter Property="FontSize" Value="16"/>
+            </Style>
+
+            <Style TargetType="controls:ToggleSwitch">
+                <Setter Property="FontSize" Value="22"/>
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="IsChecked" Value="True"/>
+                <Setter Property="Height" Value="30"/>
+                <Setter Property="Width" Value="Auto"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="RenderTransform">
+                    <Setter.Value >
+                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" CenterY="5" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style TargetType="controls:ProgressRing">
+                <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                <Setter Property="RenderTransform">
+                    <Setter.Value >
+                        <ScaleTransform ScaleX="0.5" ScaleY="0.5" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

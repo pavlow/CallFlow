@@ -1,0 +1,27 @@
+﻿<Window x:Class="CallFlowManager.UI.Views.FilterDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        Title="Filter" SizeToContent="WidthAndHeight" ResizeMode="NoResize" WindowStyle="ToolWindow">
+        <StackPanel Orientation="Vertical" Margin="10">
+        <Border BorderBrush="AliceBlue" BorderThickness="1" Margin="0, 10" Padding="5">
+            <StackPanel>
+                <Label FontWeight="Medium">Type Filter</Label>
+                <CheckBox Content="Include All PowerShell Messages" IsChecked="{Binding Filter.IsPs}" Margin="10,5,20,5"></CheckBox>
+            </StackPanel>
+        </Border>
+            <Border BorderBrush="AliceBlue" BorderThickness="1" Margin="0,10" Padding="5">
+                <StackPanel>
+                    <Label FontWeight="Medium">Log Level</Label>
+                    <CheckBox Content="Trace" IsChecked="{Binding Filter.IsTrace}" Margin="10,5,0,0"/>
+                <CheckBox Content="Debug" IsChecked="{Binding Filter.IsDebug}" Margin="10,5,0,0"/>
+                <CheckBox Content="Info" IsChecked="{Binding Filter.IsInfo}" Margin="10,5,0,0"/>
+                <CheckBox Content="Warning" IsChecked="{Binding Filter.IsWarn}" Margin="10,5,0,0"/>
+                <CheckBox Content="Error" IsChecked="{Binding Filter.IsError}" Margin="10,5,0,0"/>
+                <CheckBox Content="Fatal" IsChecked="{Binding Filter.IsFatal}" Margin="10,5,0,0"/>
+            </StackPanel>
+            </Border>
+        <Button Width ="60" Command="{Binding OkClickCommand}">Filter</Button>
+        </StackPanel>
+    
+</Window>

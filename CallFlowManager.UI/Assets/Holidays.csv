@@ -1,0 +1,11 @@
+HolidayGroupPool,HolidayGroup,HolidayName,HolidayStartDate(d/MM/yyyy),HolidayStartTime(hh:mm),HolidayEndDate,HolidayEndTime 
+CFM-S4BFE01.callflowmanager.nz,holidays,Independence Day US,24/07/2016,0:01,5/07/2016,23:59
+CFM-S4BFE01.callflowmanager.nz,holidays,Christmas,2/12/2016,0:21,5/12/2016,3:59
+CFM-S4BFE01.callflowmanager.nz,vacation,Summer,15/06/2016,13:00,29/08/2016,22:00
+CFM-S4BFE01.callflowmanager.nz,vacation,Winter,24/12/2016,15:30,3/01/2017,23:35
+CFM-S4BFE01.callflowmanager.nz,holidays,Independence Day UA,24/08/2016,0:01,24/08/2016,23:59
+CFM-S4BFE01.callflowmanager.nz,holidays,NewYear,31/12/2016,22:00,13/01/2017,23:59
+CFM-S4BFE01.callflowmanager.nz,holidays,Christmas,6/01/2016,20:01,7/01/2016,23:59
+CFM-S4BFE01.callflowmanager.nz,vacation,Summer,1/06/2016,10:00,31/08/2016,23:59
+CFM-S4BFE01.callflowmanager.nz,vacation,Winter,29/01/2016,15:30,14/01/2017,23:35
+CFM-S4BFE01.callflowmanager.nz,vacation,Autumn,23/11/2016,15:33,30/11/2016,17:15

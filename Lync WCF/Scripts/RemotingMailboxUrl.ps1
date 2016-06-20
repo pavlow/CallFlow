@@ -1,0 +1,2 @@
+$MailboxServer = Get-ExchangeServer | where { $_.IsE14orLater -and $_.IsClientAccessServer } | Select -first 1 | Select Identity;
+Get-PowerShellVirtualDirectory -server $MailboxServer.Identity | where { $_.InternalURL } | select InternalURL;
