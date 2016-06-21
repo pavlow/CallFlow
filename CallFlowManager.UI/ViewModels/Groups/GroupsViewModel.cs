@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -9,6 +10,7 @@ using System.Windows.Input;
 using CallFlowManager.UI.Business;
 using CallFlowManager.UI.Common;
 using System.Threading.Tasks;
+using CallFlowManager.UI.Common.ValidationRules;
 using Logging;
 
 namespace CallFlowManager.UI.ViewModels.Groups
@@ -41,7 +43,7 @@ namespace CallFlowManager.UI.ViewModels.Groups
             _backgroundWorker = new BackgroundWorker();
             _loadedGroups = new List<GroupViewModel>();
             CurrentGroup = new GroupViewModel();
-            
+
             SelectedGroup = new GroupViewModel();
 
             _psQ = new PsQueries();
@@ -102,18 +104,68 @@ namespace CallFlowManager.UI.ViewModels.Groups
             }
         }
 
-        //public string CurrentGroupDistributionGroup
-        //{
-        //    get { return CurrentGroup.DistributionGroup; }
-        //    set
-        //    {
-        //        if (CurrentGroup.DistributionGroup != value)
-        //        {
-        //            CurrentGroup.DistributionGroup = value;
-        //            OnPropertyChanged("CurrentGroupDistributionGroup");
-        //        }
-        //    }
-        //}
+        public string CurrentGroupDistributionGroup
+        {
+            get { return CurrentGroup.DistributionGroup; }
+            set
+            {
+                if (CurrentGroup.DistributionGroup != value)
+                {
+                    CurrentGroup.DistributionGroup = value;
+                    OnPropertyChanged("CurrentGroupDistributionGroup");
+                }
+            }
+        }
+
+        public bool CurrentGroupIsDistributionGroup
+        {
+            get { return CurrentGroup.IsDistributionGroup; }
+            set
+            {
+                if (CurrentGroup.IsDistributionGroup != value)
+                {
+                    CurrentGroup.IsDistributionGroup = value;
+                    OnPropertyChanged("CurrentGroupIsDistributionGroup");
+                    OnPropertyChanged("CurrentGroupDistributionGroup");
+
+                    if (!value)
+                    {
+                        CurrentGroupIsGroupAgents = true;
+                    }
+
+                    if (value)
+                    {
+                        CurrentGroupIsGroupAgents = false;
+                    }
+                    OnPropertyChanged("CurrentGroupIsGroupAgents");
+                }
+            }
+        }
+
+        public bool CurrentGroupIsGroupAgents
+        {
+            get { return CurrentGroup.IsGroupAgents; }
+            set
+            {
+                if (CurrentGroup.IsGroupAgents != value)
+                {
+                    CurrentGroup.IsGroupAgents = value;
+                    OnPropertyChanged("CurrentGroupIsGroupAgents");
+
+                    if (!value)
+                    {
+                        CurrentGroupIsDistributionGroup = true;
+                    }
+
+                    if (value)
+                    {
+                        CurrentGroupIsDistributionGroup = false;
+                    }
+                    OnPropertyChanged("CurrentGroupIsDistributionGroup");
+                    OnPropertyChanged("CurrentGroupDistributionGroup");
+                }
+            }
+        }
 
         /// <summary>
         /// Value to display on the status bar
@@ -276,7 +328,7 @@ namespace CallFlowManager.UI.ViewModels.Groups
         {
 
         }
-        
+
         public GroupViewModel SelectedGroup
         {
             get { return _selectedGroup; }
@@ -341,7 +393,7 @@ namespace CallFlowManager.UI.ViewModels.Groups
             get { return _selectedAgent; }
             set
             {
-                if (_selectedAgent != value )
+                if (_selectedAgent != value)
                 {
                     _selectedAgent = value;
                     OnPropertyChanged("SelectedAgent");
@@ -403,11 +455,12 @@ namespace CallFlowManager.UI.ViewModels.Groups
                 SelectedIndex = indexItem + 1;
             }
         }
-        private void ForcePropertyChange()
-        {
-            OnPropertyChanged("DisplayName");
-            OnPropertyChanged("CurrentGroupTimeout");
-        }
+
+        //private void ForcePropertyChange()
+        //{
+        //    OnPropertyChanged("DisplayName");
+        //    OnPropertyChanged("CurrentGroupTimeout");
+        //}
 
         #region Validate
 
@@ -431,6 +484,29 @@ namespace CallFlowManager.UI.ViewModels.Groups
                         if (CurrentGroupTimeout < 10 || CurrentGroupTimeout > 600)
                             error = "Must be in interval: 10-600";
                         break;
+                    case "CurrentGroupDistributionGroup":
+                    case "CurrentGroupIsDistributionGroup":
+                        if (!CurrentGroupIsDistributionGroup)
+                        {
+                            error = String.Empty;
+                        }
+                        else
+                        {
+                            if (String.IsNullOrEmpty(CurrentGroupDistributionGroup) && CurrentGroupIsDistributionGroup)
+                            {
+                                error = "String can't be empty";
+                            }
+                            else
+                            {
+                                if (!ValidateHelper.IsValidEmail(CurrentGroupDistributionGroup))
+                                {
+                                    error = "Input the string in e-mail format";
+                                }
+                            }
+                        }
+                        break;
+
+
                     //case "CurrentGroupTimeout":
                     //    if (CurrentGroupTimeout < 10 || CurrentGroupTimeout > 600)
                     //        error = "Must be in interval: 10-600";

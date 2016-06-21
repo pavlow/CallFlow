@@ -68,7 +68,10 @@
                                     <DataTrigger Binding="{Binding DisplayName}" Value="{x:Null}">
                                         <Setter Property="IsEnabled" Value="False"/>
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding SelectedGroup}" Value="{x:Null}">
+                                    <!--<DataTrigger Binding="{Binding SelectedGroup}" Value="{x:Null}">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>-->
+                                    <DataTrigger Binding="{Binding CurrentGroup.OwnerPool}" Value="{x:Null}">
                                         <Setter Property="IsEnabled" Value="False"/>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -93,31 +96,22 @@
 
                     <WrapPanel Orientation="Horizontal">
                         <controls:ToggleSwitch 
-                        IsChecked="{Binding Path=CurrentGroup.IsDistributionGroup}"
+                        IsChecked="{Binding Path=CurrentGroupIsDistributionGroup, UpdateSourceTrigger=PropertyChanged}"
                         HorizontalAlignment="Left"
-                        Margin="5,0"/>
+                        Margin="5,0"
+                            />
                         <Label IsEnabled="{Binding CurrentGroup.IsDistributionGroup}" Name="TestText1" Content="Route calls based on distribution group" VerticalAlignment="Center"/>
                     </WrapPanel>
 
-                    <!--<TextBox IsEnabled="{Binding CurrentGroup.IsDistributionGroup}" Text="{Binding Path=CurrentGroup.DistributionGroup, UpdateSourceTrigger=PropertyChanged }"/>-->
-
-                    <TextBox Name="DistributionGroup" IsEnabled="{Binding CurrentGroup.IsDistributionGroup}" controls:TextBoxHelper.Watermark="If ON - required Email format" >
-                        <TextBox.Text>
-                            <Binding Path="CurrentGroup.DistributionGroup" UpdateSourceTrigger="LostFocus"  ValidatesOnDataErrors="True">
-                                <Binding.ValidationRules>
-                                    <validationRules:EmailRule ValidationStep="RawProposedValue"/>
-                                    <validationRules:RequiredValidationRule IsRequired="True" ValidationStep="RawProposedValue" />
-                                </Binding.ValidationRules>
-                            </Binding>
-                        </TextBox.Text>
-                    </TextBox>
+                    <TextBox Name="DistributionGroup" IsEnabled="{Binding CurrentGroupIsDistributionGroup}" 
+                             Text="{Binding CurrentGroupDistributionGroup, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"/>
 
                     <WrapPanel Orientation="Horizontal" Margin="0,10,0,0">
                         <controls:ToggleSwitch 
-                        IsChecked="{Binding Path=CurrentGroup.IsGroupAgents}"
+                        IsChecked="{Binding Path=CurrentGroupIsGroupAgents}"
                         HorizontalAlignment="Left"
                         Margin="5,0"/>
-                        <Label IsEnabled="{Binding CurrentGroup.IsGroupAgents}" Content="Route calls to the following agents" VerticalAlignment="Center"/>
+                        <Label IsEnabled="{Binding CurrentGroupIsGroupAgents}" Content="Route calls to the following agents" VerticalAlignment="Center"/>
                     </WrapPanel>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Grid.Row="2"  Margin="0,10,0,0">
